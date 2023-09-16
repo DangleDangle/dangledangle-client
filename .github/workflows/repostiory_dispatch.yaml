@@ -1,0 +1,26 @@
+name: Dispatch to Forked Repository
+
+on:
+  push:
+
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get the refs
+        run: echo "[log] ref is ${{github.ref}}"
+      - name: Get the branch name
+        run: echo "[log] Branch name is ${{github.ref_name}}"
+
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        run: |
+          curl -L \
+          -X POST https://api.github.com/repos/${{vars.DEPLOY_REPO_PATH}}/dispatches \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.DEPLOY_REPO_ACCESS_TOKEN}}" \
+          -d '{"event_type": "sync", "client_payload": {"target_branch": "chore/action/ignore-action"}}'
