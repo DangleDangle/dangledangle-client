@@ -17,6 +17,7 @@ export const container = style({
   backgroundRepeat: 'no-repeat',
   backgroundSize: 'auto',
   backgroundPosition: '148px -86px',
+  cursor: 'pointer',
   selectors: {
     [`&:only-child`]: {
       flexGrow: 1
@@ -52,10 +53,10 @@ export const timeInfo = style({
   display: 'flex',
   flexDirection: 'column',
   rowGap: '2px',
-  color: `white`,
+  color: palette.gray900,
   selectors: {
     [`${container}:first-child &`]: {
-      color: `white`
+      color: palette.white
     }
   }
 });

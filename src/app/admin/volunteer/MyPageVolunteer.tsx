@@ -110,7 +110,7 @@ export default function MyPageVolunteer({
     };
     mutateAsync(payload).then(res => {
       toastOn('계정 정보가 업로드 되었습니다.');
-      router.push('/admin');
+      history.go(-1);
     });
   };
 

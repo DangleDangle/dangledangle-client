@@ -6,7 +6,7 @@ import {
 import { getCookieConfig } from '@/utils/token/cookieConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
-export default async function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const cookies = req.cookies;
   const beforeAccessToken = cookies.get(COOKIE_ACCESS_TOKEN_KEY)?.value;
   const beforeRefreshToken = cookies.get(COOKIE_REFRESH_TOKEN_KEY)?.value;

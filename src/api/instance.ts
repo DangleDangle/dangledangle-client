@@ -3,7 +3,8 @@ import { setAuthorizationHeader } from '@/utils/ky/hooks/beforeRequest';
 import {
   deleteClientCokiesPath,
   retryRequestOnUnauthorized,
-  throwServerErrorMessage
+  throwServerErrorMessage,
+  redirectTokenError
 } from '@/utils/ky/hooks/afterResponse';
 
 /**
@@ -26,6 +27,7 @@ const api = ky.extend({
     beforeRequest: [setAuthorizationHeader(process)],
     afterResponse: [
       retryRequestOnUnauthorized(process),
+      redirectTokenError(process),
       throwServerErrorMessage,
       deleteClientCokiesPath
     ]

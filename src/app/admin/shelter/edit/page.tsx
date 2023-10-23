@@ -1,6 +1,6 @@
 'use client';
 import ImageUploader from '@/components/common/ImageUploader/ImageUploader';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import EditMenu from '@/components/shelter-edit/EditMenu/EditMenu';
 import Badge from '@/components/common/Badge/Badge';
 import Divider from '@/components/common/Divider/Divider';
@@ -14,20 +14,20 @@ import useBooleanState from '@/hooks/useBooleanState';
 import useDialog from '@/hooks/useDialog';
 import useToast from '@/hooks/useToast';
 import useDeleteObservationAnimal from '@/api/shelter/admin/useDeleteObservationAnimal';
-import useObservationAnimalList from '@/api/shelter/admin/useObservationAnimalList';
 import useShelterInfo from '@/api/shelter/admin/useShelterInfo';
 import { OUT_LINK_TYPE } from '@/constants/shelter';
 import useImageUploader from '@/hooks/useImageUploader';
 import useUpdateImage from '@/api/shelter/admin/useUpdateImage';
 import useHeader from '@/hooks/useHeader';
-import { ObservationAnimal, ShelterAdditionalInfo } from '@/types/shelter';
+import { ObservationAnimal, ShelterInfo } from '@/types/shelter';
 import FixedFooter from '@/components/common/FixedFooter/FixedFooter';
-import RegisterComplete from '@/app/register/shelter/components/RegisterComplete';
+import RegisterComplete from '@/app/register/shelter/[...slug]/RegisterComplete';
+import useObservationAnimalListAtHome from '@/api/shelter/{shelterId}/useObservationAnimalList';
 
 export default function ShelterEditPage() {
   useHeader({ title: '보호소 정보' });
-  const { onChangeImage, isUploading } = useImageUploader();
-  const [uploadError, setUploadError] = useState<boolean>(false);
+  const { onChangeImage, isUploading, uploadError } = useImageUploader();
+  const [postError, setPostError] = useState<boolean>(false);
   const router = useRouter();
 
   const [isOpened, openDialog, closeDialog] = useBooleanState(false);
@@ -36,8 +36,24 @@ export default function ShelterEditPage() {
   const [targetAnimal, setTargetAnimal] = useState<ObservationAnimal>();
   const [registerCompleted, setRegisterCompleted] = useState<Boolean>(false);
 
-  const animalsQuery = useObservationAnimalList();
   const shelterQuery = useShelterInfo();
+  const { data, fetchNextPage, hasNextPage, isSuccess } =
+    useObservationAnimalListAtHome(
+      { shelterId: shelterQuery.data?.id || -1 },
+      { enabled: Boolean(shelterQuery.data?.id) }
+    );
+  const animalLists = useMemo(() => {
+    return data?.pages.reduce((acc: ObservationAnimal[], page) => {
+      return [...acc, ...page.content];
+    }, []);
+  }, [data?.pages]);
+
+  useEffect(() => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage]);
+
   const { mutateAsync: deleteAnimal } = useDeleteObservationAnimal();
   const { mutateAsync: updateImage } = useUpdateImage();
 
@@ -47,7 +63,7 @@ export default function ShelterEditPage() {
         if (!url) throw Error();
         await updateImage(url);
       } catch {
-        setUploadError(true);
+        setPostError(true);
         shelterQuery.refetch();
       }
     });
@@ -71,8 +87,8 @@ export default function ShelterEditPage() {
   };
 
   const handleClickEdit = (idx: number) => {
-    if (animalsQuery.data) {
-      setTargetAnimal(animalsQuery.data[idx]);
+    if (animalLists) {
+      setTargetAnimal(animalLists[idx]);
       openDialog();
     }
   };
@@ -82,20 +98,39 @@ export default function ShelterEditPage() {
     openDialog();
   };
 
-  const isAddtionalInfoCompleted = (info: ShelterAdditionalInfo) => {
-    if (info.outLinks.length !== Object.keys(OUT_LINK_TYPE).length)
-      return false;
-    return !Object.values(info).includes(null);
+  const getAdditionalInfoStatus = (info: ShelterInfo) => {
+    const isOutlinkCompleted =
+      info.outLinks.length === Object.keys(OUT_LINK_TYPE).length;
+    const isCompleted =
+      info.parkingInfo && info.bankAccount && info.notice && isOutlinkCompleted;
+    const isInProgress =
+      info.parkingInfo ||
+      info.bankAccount ||
+      info.notice ||
+      info.outLinks.length > 0;
+
+    return isCompleted
+      ? 'completed'
+      : isInProgress
+      ? 'in_progress'
+      : 'not_entered';
   };
 
   const handleClickCompleteRegister = () => {
     setRegisterCompleted(true);
   };
 
-  const MenuBadge = (isCompleted: boolean) => (
-    <Badge type={isCompleted ? 'success' : 'gray'}>
-      {isCompleted ? '입력 완료' : '미입력'}
-    </Badge>
+  const MenuBadge = useCallback(
+    (status: ReturnType<typeof getAdditionalInfoStatus>) => (
+      <Badge type={status === 'completed' ? 'success' : 'gray'}>
+        {status === 'completed'
+          ? '입력 완료'
+          : status === 'in_progress'
+          ? '입력중'
+          : '미입력'}
+      </Badge>
+    ),
+    []
   );
 
   if (registerCompleted) {
@@ -112,15 +147,22 @@ export default function ShelterEditPage() {
           defaultImage="shelter"
           size="96"
           loading={isUploading}
-          error={uploadError}
+          error={uploadError || postError}
           onChangeCallback={handleChangeImage}
         />
       </section>
       <section>
         <EditMenu
+          title="비밀번호 변경"
+          caption=""
+          onClick={() => router.push(location.pathname + '/password')}
+        />
+        <Divider spacing={18} />
+
+        <EditMenu
           title="필수 정보"
           caption="보호소 이름 / 연락처 / 주소 / 소개문구"
-          titleSuffix={MenuBadge(true)}
+          titleSuffix={MenuBadge('completed')}
           onClick={() => router.push(location.pathname + '/required')}
         />
         <Divider spacing={18} />
@@ -128,8 +170,9 @@ export default function ShelterEditPage() {
           title="추가 정보"
           caption="SNS계정 / 후원 계좌 정보 / 주차 정보 / 사전 안내사항"
           titleSuffix={MenuBadge(
-            shelterQuery.isSuccess &&
-              isAddtionalInfoCompleted(shelterQuery.data)
+            shelterQuery.isSuccess
+              ? getAdditionalInfoStatus(shelterQuery.data)
+              : 'not_entered'
           )}
           onClick={() => router.push(location.pathname + '/extra')}
         />
@@ -142,12 +185,10 @@ export default function ShelterEditPage() {
           titleSuffix={
             <H4
               color={
-                animalsQuery.data && animalsQuery.data.length > 0
-                  ? 'primary300'
-                  : 'gray400'
+                animalLists && animalLists.length > 0 ? 'primary300' : 'gray400'
               }
             >
-              {animalsQuery.data?.length || 0}
+              {animalLists?.length || 0}
             </H4>
           }
         />
@@ -159,9 +200,9 @@ export default function ShelterEditPage() {
         >
           동물 추가하기
         </Button>
-        {animalsQuery.isSuccess && (
+        {isSuccess && animalLists && (
           <div className={styles.animalList}>
-            {animalsQuery.data.map((animal, idx) => (
+            {animalLists.map((animal, idx) => (
               <AnimalCard
                 key={animal.id}
                 data={animal}

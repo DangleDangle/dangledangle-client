@@ -22,10 +22,7 @@ export default function useWithdrawVolEvent(
     ({ shelterId, volunteerEventId }) => withdraw(shelterId, volunteerEventId),
     {
       onSuccess: (data, variables, context) => {
-        return queryClient.invalidateQueries({
-          queryKey: queryKey.all,
-          refetchType: 'all'
-        });
+        return queryClient.invalidateQueries();
       },
       ...options
     }

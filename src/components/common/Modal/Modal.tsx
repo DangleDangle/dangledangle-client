@@ -13,10 +13,11 @@ export default function Modal({
   open = false,
   onClose,
   isHeader = true,
+  zIndex,
   children
 }: ModalProps) {
   return (
-    <DialogBase open={open} onClose={onClose}>
+    <DialogBase open={open} onClose={onClose} zIndex={zIndex}>
       {isHeader && (
         <header className={styles.header}>
           <Close className={styles.closeIcon} onClick={onClose} />

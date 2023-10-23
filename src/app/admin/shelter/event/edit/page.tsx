@@ -1,6 +1,16 @@
 'use client';
 
+import useAdminVolunteerEvent from '@/api/shelter/admin/useAdminVolunteerEvent';
+import useUpdateVolunteerEvent from '@/api/shelter/admin/useUpdateVolunteerEvent';
+import {
+  PutVolunteerEventPayload,
+  VolunteerEventPayload
+} from '@/api/shelter/admin/volunteer-event';
+import Button from '@/components/common/Button/Button';
 import ChipInput from '@/components/common/ChipInput/ChipInput';
+import FixedFooter from '@/components/common/FixedFooter/FixedFooter';
+import TextArea from '@/components/common/TextField/TextArea';
+import TextField from '@/components/common/TextField/TextField';
 import {
   ButtonText1,
   Caption1,
@@ -14,29 +24,20 @@ import {
   IterationCycle,
   VolunteerEventCategory
 } from '@/constants/volunteerEvent';
-import { useEffect, useMemo, useState } from 'react';
-import * as styles from './styles.css';
-import { useForm } from 'react-hook-form';
+import useHeader from '@/hooks/useHeader';
+import { formatDatetimeForServer, getEndOfMonth } from '@/utils/timeConvert';
 import yup from '@/utils/yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import TextField from '@/components/common/TextField/TextField';
-import TextArea from '@/components/common/TextField/TextArea';
-import FixedFooter from '@/components/common/FixedFooter/FixedFooter';
-import Button from '@/components/common/Button/Button';
-import moment from 'moment';
-import getMaxOfIterationEndAt from './utils/getMaxOfIterationEndAt';
-import getIterationNotice from './utils/getIterationNotice';
 import { isEmpty } from 'lodash';
-import { formatDatetimeForServer } from '@/utils/timeConvert';
-import {
-  PutVolunteerEventPayload,
-  VolunteerEventPayload,
-  post,
-  put
-} from '@/api/shelter/admin/volunteer-event';
-import useAdminVolunteerEvent from '@/api/shelter/admin/useAdminVolunteerEvent';
+import moment from 'moment';
 import { useRouter } from 'next/navigation';
-import useHeader from '@/hooks/useHeader';
+import { BaseSyntheticEvent, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as styles from './styles.css';
+import getIterationNotice from './utils/getIterationNotice';
+import { getMaxOfIterationEndAt, getMaxOfDateInput } from './utils/getMaxDate';
+import useWriteVolunteerEvent from '@/api/shelter/admin/useWriteVolunteerEvent';
+import useRouteGuard from '@/hooks/useRouteGuard';
 
 type ChipValues = {
   category: string;
@@ -81,6 +82,7 @@ export default function ShelterEventEditPage({
   searchParams: { id: string };
 }) {
   const router = useRouter();
+  const { setRoutable } = useRouteGuard();
 
   const eventId = useMemo(
     () =>
@@ -101,6 +103,7 @@ export default function ShelterEventEditPage({
     reset,
     trigger,
     resetField,
+    setValue,
     formState: { errors, isDirty }
   } = useForm<FormValues>({
     mode: 'all',
@@ -161,9 +164,30 @@ export default function ShelterEventEditPage({
     [endAt]
   );
 
-  const handleChangeDate = () => {
-    trigger(['startAt', 'endAt', 'iterationEndAt']);
+  const handleChangeDate = (e: BaseSyntheticEvent) => {
+    if (e.target.name === 'startAt') {
+      const startAt = moment(e.target.value);
+      setValue(
+        'endAt',
+        formatDatetimeForServer(startAt.add(1, 'hour').toDate(), 'DATETIME')
+      );
+    }
+
+    trigger(['startAt', 'endAt']);
   };
+
+  useEffect(() => {
+    let iterationEndAt = getEndOfMonth(endAt);
+    if (!iterationEndAt) return;
+    if (moment(endAt).date() === iterationEndAt.date()) {
+      iterationEndAt = getEndOfMonth(iterationEndAt.add(1, 'd'));
+    }
+    setValue(
+      'iterationEndAt',
+      formatDatetimeForServer(iterationEndAt.toDate(), 'DATE') as any
+    );
+    trigger(['iterationEndAt']);
+  }, [endAt, setValue, trigger]);
 
   const handleChipInput = (name: string, value: string) => {
     setChipInput({ ...chipInput, [name]: value });
@@ -178,9 +202,7 @@ export default function ShelterEventEditPage({
   }, [startAt, chipInput.iterationCycle]);
 
   useEffect(() => {
-    if (!chipInput.iterationCycle) {
-      resetField('iterationEndAt');
-    } else {
+    if (chipInput.iterationCycle) {
       trigger('iterationEndAt');
     }
   }, [chipInput.iterationCycle, resetField, trigger]);
@@ -220,13 +242,17 @@ export default function ShelterEventEditPage({
     return payload;
   };
 
+  const { mutateAsync: putEvent } = useUpdateVolunteerEvent();
+  const { mutateAsync: postEvent } = useWriteVolunteerEvent();
+
   const onSubmit = async (values: FormValues) => {
+    setRoutable(true);
     if (initialData) {
       const payload = getPutPayload(values);
-      await put(eventId, payload);
+      await putEvent({ eventId, ...payload });
     } else {
       const payload = getPostPayload(values);
-      await post(payload);
+      await postEvent(payload);
     }
     router.back();
   };
@@ -262,6 +288,7 @@ export default function ShelterEventEditPage({
         placeholder="봉사 일정에 대한 설명을 작성해주세요."
         {...register('description')}
         error={errors.description}
+        defaultValue={watch('description')}
         height="128px"
         maxLength={300}
       />
@@ -270,6 +297,7 @@ export default function ShelterEventEditPage({
         type="datetime-local"
         required
         min={minStartAt}
+        max={getMaxOfDateInput()}
         {...register('startAt', {
           valueAsDate: true,
           onChange: handleChangeDate
@@ -281,6 +309,7 @@ export default function ShelterEventEditPage({
         type="datetime-local"
         required
         min={minEndAt}
+        max={getMaxOfDateInput()}
         {...register('endAt', {
           valueAsDate: true,
           onChange: handleChangeDate
@@ -314,7 +343,6 @@ export default function ShelterEventEditPage({
           type="date"
           min={minIterationEndAt}
           max={getMaxOfIterationEndAt()}
-          defaultValue={getMaxOfIterationEndAt()}
           {...register('iterationEndAt', { onChange: handleChangeDate })}
           error={errors.iterationEndAt}
         />

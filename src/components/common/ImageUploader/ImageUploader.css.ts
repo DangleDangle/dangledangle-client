@@ -43,13 +43,26 @@ export const fileInput = style({
   pointerEvents: 'none'
 });
 
-export const loadingMask = style({
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  backgroundColor: palette.gray200,
-  opacity: 0.7,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
+export const loadingMask = recipe({
+  base: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: palette.gray200,
+    opacity: 0.7,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  variants: {
+    shape: {
+      square: {
+        borderRadius: 8
+      },
+      circle: {
+        borderRadius: '100%'
+      }
+    }
+  }
 });

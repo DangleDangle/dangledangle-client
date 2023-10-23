@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import useHeader from '@/hooks/useHeader';
 import { VOLUNTEER_REDIRECT_PATH_REGISTER } from '@/app/register/volunteer/[...slug]/CurrentComponentTypes';
 import { URL_PRIVACY_POLICY, URL_TERMS_OF_USE } from '@/constants/landingURL';
+import useKeyboardActive from '@/hooks/useKeyboardActive';
 
 type InitTermsOfUserAcceptStateType = {
   age: boolean;
@@ -60,6 +61,13 @@ export default function TermsOfUserAcceptModal({}: React.PropsWithChildren<Terms
       [name]: !checkList[name]
     });
   };
+
+  const keyboardActive = useKeyboardActive();
+
+  const handleNextClick = useCallback(() => {
+    keyboardActive();
+    router.push(`${VOLUNTEER_REDIRECT_PATH_REGISTER}/nickname`);
+  }, []);
 
   /** 버튼 disabled 설정 */
   const isDisabled = !(checkList.age && checkList.service && checkList.privacy);
@@ -148,9 +156,7 @@ export default function TermsOfUserAcceptModal({}: React.PropsWithChildren<Terms
         <Button
           className={styles.bottomButton}
           disabled={isDisabled}
-          onClick={() => {
-            router.push(`${VOLUNTEER_REDIRECT_PATH_REGISTER}/nickname`);
-          }}
+          onClick={handleNextClick}
         >
           다음
         </Button>

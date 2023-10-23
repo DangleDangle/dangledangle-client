@@ -1,11 +1,17 @@
 import * as Yup from 'yup';
-import { RegisterFormValues } from './CurrentComponentTypes';
+import {
+  FORM_CONTACT_NUMBER,
+  FORM_NICKNAME,
+  RegisterFormValues
+} from './CurrentComponentTypes';
 import { phoneRegex, removeDash } from '@/utils/formatInputs';
+import yup from '@/utils/yup';
 
 export const validation: Yup.ObjectSchema<{
   [K in RegisterFormValues]: any;
-}> = Yup.object().shape({
-  nickname: Yup.string()
+}> = yup.object().shape({
+  [FORM_NICKNAME]: yup
+    .string()
     .max(10)
     .required('닉네임을 한글자 이상 입력해주세요.')
     .test(
@@ -14,7 +20,9 @@ export const validation: Yup.ObjectSchema<{
       (value = '') =>
         !/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu.test(value)
     ),
-  contactNumber: Yup.string()
+  [FORM_CONTACT_NUMBER]: yup
+    .string()
+    .required()
     .matches(phoneRegex, '숫자만 입력해주세요')
     .test(
       'phone-format-validation',

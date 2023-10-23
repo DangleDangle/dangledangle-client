@@ -4,7 +4,6 @@ import {
   useQueryClient
 } from '@tanstack/react-query';
 import { DeleteResponse, remove } from './volunteer-event';
-import { queryKey } from '../volunteer-event';
 
 export interface DeleteEventPayload extends DeleteResponse {
   shelterId: number;

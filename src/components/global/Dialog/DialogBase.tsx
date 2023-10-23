@@ -11,18 +11,20 @@ export interface DialogBaseProps extends PropsWithChildren {
   open: boolean;
   /** dialog close function  */
   onClose: () => void;
+  zIndex?: number;
 }
 
 export default function DialogBase({
   open = false,
   children,
+  zIndex = 100,
   onClose
 }: DialogBaseProps) {
   const { modalSize, modalRef } = useResize(open);
 
   return (
     <Portal portalId="modal">
-      <section className={styles.container}>
+      <section className={styles.container} style={{ zIndex }}>
         <AnimatePresence>
           {open && (
             <>

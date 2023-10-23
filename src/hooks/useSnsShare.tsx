@@ -32,11 +32,15 @@ export default function useSnsShare() {
     }
 
     kakao.Share.sendDefault({
-      objectType: 'text',
-      text: title,
-      link: {
-        mobileWebUrl: url,
-        webUrl: url
+      objectType: 'feed',
+      content: {
+        title,
+        description: '댕글댕글과 함께 더 나은 세상을 만들어봐요!',
+        imageUrl: 'https://dangle.co.kr/svg/SnsShareImg.svg',
+        link: {
+          mobileWebUrl: url,
+          webUrl: url
+        }
       }
     });
   };

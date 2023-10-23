@@ -37,6 +37,12 @@ export default function ToggleSection({
   const { mutateAsync: shelterAlarm } = useUpdateShelterAlarm();
 
   const toastOn = useToast();
+  const handleToastMsg = useCallback((isCheck: boolean) => {
+    let msg = isCheck
+      ? '알림 수신이 OFF 되었습니다.'
+      : '알림 수신이 ON 되었습니다.';
+    return msg;
+  }, []);
 
   const handleToggleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +56,7 @@ export default function ToggleSection({
         };
 
         volunteerAlarm(payload).then(res => {
-          toastOn('카카오톡 알림 설정이 업로드 되었습니다.');
+          toastOn(handleToastMsg(e.target.checked));
         });
       } else {
         payload = {
@@ -58,11 +64,11 @@ export default function ToggleSection({
         };
 
         shelterAlarm(payload).then(res => {
-          toastOn('카카오톡 알림 설정이 업로드 되었습니다.');
+          toastOn(handleToastMsg(e.target.checked));
         });
       }
     },
-    [volunteerAlarm, shelterAlarm, toastOn, info]
+    [volunteerAlarm, shelterAlarm, toastOn, info, handleToastMsg]
   );
 
   return (

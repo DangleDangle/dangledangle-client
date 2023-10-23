@@ -12,6 +12,7 @@ import SkeletonList from '@/components/common/Skeleton/SkeletonList';
 import FloatingButton from '../FloatingButton/FloatingButton';
 import { useAuthContext } from '@/providers/AuthContext';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
 interface ScheduleTabProps {
   shelterId: number;
@@ -94,7 +95,7 @@ const ScheduleTab: React.FC<ScheduleTabProps> = ({ shelterId }) => {
     <div>
       <DangleCalendar
         id={CALENDAR_ID}
-        className={styles.calendar}
+        className={clsx(styles.calendar, 'sticky')}
         mark={eventDates}
         onChange={handleClickDate}
         onChangeMonth={handleChangeMonth}

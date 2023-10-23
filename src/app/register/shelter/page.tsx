@@ -1,144 +1,90 @@
 'use client';
+import { Question, Warning } from '@/asset/icons';
+import Button from '@/components/common/Button/Button';
+import CheckBox from '@/components/common/CheckBox/CheckBox';
+import EmphasizedTitle, {
+  E,
+  Line
+} from '@/components/common/EmphasizedTitle/EmphasizedTitle';
+import { Body3, Body4, H4 } from '@/components/common/Typography';
+import { assignInlineVars } from '@vanilla-extract/dynamic';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import * as styles from './styles.css';
+import useKeyboardActive from '@/hooks/useKeyboardActive';
 
-import { ShelterRegisterPayload } from '@/api/shelter/auth/sign-up';
-import useShelterRegister from '@/api/shelter/auth/useShelterRegister';
-import FormProvider from '@/components/common/FormProvider/FormProvider';
-import useFunnel, { StepsProps } from '@/hooks/useFunnel';
-import useToast from '@/hooks/useToast';
-import { removeDash } from '@/utils/formatInputs';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { usePathname } from 'next/navigation';
-import { useCallback } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import Account from './components/Account';
-import Additional from './components/Additional';
-import Address from './components/Address';
-import Description from './components/Description';
-import Hp from './components/Hp';
-import Name from './components/Name';
-import RegisterComplete from './components/RegisterComplete';
-import RequireComplete from './components/RequireComplete';
-import SpecificAddress from './components/SpecificAddress';
-import Sure from './components/Sure';
-import { registerValidation } from '@/app/shelter/utils/shelterValidaion';
-import useHeader from '@/hooks/useHeader';
-import useShelterLogin from '@/api/shelter/auth/useShelterLogin';
+export default function Sure() {
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
+  const keyboardActive = useKeyboardActive();
 
-export interface OnNextProps {
-  onNext: VoidFunction;
-  onSubmit: SubmitHandler<SignUpFormValue>;
-  onLogin: (
-    loginData: Pick<SignUpFormValue, 'email' | 'password'>
-  ) => Promise<void>;
-}
+  const handleClick = useCallback(() => {
+    keyboardActive();
+    router.push('/register/shelter/step');
+  }, []);
 
-export interface SignUpFormValue extends ShelterRegisterPayload {
-  passwordConfirm: string;
-}
-
-const Steps: StepsProps<OnNextProps>[] = [
-  {
-    component: Sure,
-    path: 'step0'
-  },
-  {
-    component: Account,
-    path: 'step1'
-  },
-  {
-    component: Name,
-    path: 'step2'
-  },
-  {
-    component: Hp,
-    path: 'step3'
-  },
-  {
-    component: Address,
-    path: 'step4'
-  },
-  {
-    component: SpecificAddress,
-    path: 'step5'
-  },
-  {
-    component: Description,
-    path: 'step6'
-  },
-  {
-    component: RequireComplete,
-    path: 'step7'
-  },
-  {
-    component: Additional,
-    path: 'step8'
-  },
-  {
-    component: RegisterComplete,
-    path: 'step9'
-  }
-];
-
-export default function ShelterRegister() {
-  const toastOn = useToast();
-  useHeader({ title: '보호소 파트너 계정 가입' });
-
-  const pathname = usePathname();
-  const { goToNextStep, currentStepIndex } = useFunnel<OnNextProps>(
-    Steps,
-    pathname
-  );
-  const CurrentComponent = Steps[currentStepIndex].component;
-
-  const methods = useForm<SignUpFormValue>({
-    mode: 'all',
-    reValidateMode: 'onChange',
-    resolver: yupResolver(registerValidation)
-  });
-
-  const { mutateAsync: registerMutateAsync } = useShelterRegister();
-  const { mutateAsync: loginMutateAsync } = useShelterLogin();
-
-  const { handleSubmit } = methods;
-
-  const onSubmit = useCallback(
-    async (data: SignUpFormValue) => {
-      const newData: ShelterRegisterPayload = {
-        ...data,
-        name: data.name.trim(),
-        phoneNumber: removeDash(data.phoneNumber)
-      };
-
-      try {
-        await registerMutateAsync(newData);
-        goToNextStep();
-        toastOn('회원가입에 성공했습니다.');
-      } catch (error) {
-        toastOn('회원가입에 실패했습니다.');
-      }
-    },
-    [goToNextStep, toastOn, registerMutateAsync]
-  );
-
-  const onLogin = useCallback(
-    async (loginData: Pick<SignUpFormValue, 'email' | 'password'>) => {
-      try {
-        await loginMutateAsync(loginData);
-        goToNextStep();
-        toastOn('로그인에 성공했습니다.');
-      } catch (error) {
-        toastOn('로그인에 실패했습니다.');
-      }
-    },
-    [goToNextStep, toastOn, loginMutateAsync]
-  );
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <CurrentComponent
-        onNext={goToNextStep}
-        onSubmit={onSubmit}
-        onLogin={onLogin}
-      />
-    </FormProvider>
+    <>
+      <div
+        className={styles.titleWrapper}
+        style={assignInlineVars({
+          [styles.titleMarginBottom]: '63px'
+        })}
+      >
+        <EmphasizedTitle>
+          <Line>
+            <E>보호소 파트너</E>로
+          </Line>
+          <Line>가입하시는 것이 맞는지</Line>
+          <Line>꼭 확인해주세요.</Line>
+        </EmphasizedTitle>
+      </div>
+
+      <div className={styles.subWrapper}>
+        <Question />
+        <H4>보호소 파트너란?</H4>
+      </div>
+
+      <div className={styles.content}>
+        <div style={{ padding: '16px' }}>
+          <Body3>시보호소 또는 민간보호소를 운영하는</Body3>
+          <div style={{ display: 'flex' }}>
+            <Body4>운영자, 관계자분들을 대상</Body4>
+            <Body3>으로해요.</Body3>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.subWrapper} style={{ marginTop: '33px' }}>
+        <Warning />
+        <H4>주의해주세요.</H4>
+      </div>
+
+      <div className={styles.content} style={{ marginBottom: '98px' }}>
+        <div style={{ padding: '16px' }}>
+          <Body3>운영자가 확인했을 때 시보호소/민간 보호소</Body3>
+          <Body3>관계자가 아닌, 개인 구조자, 분양 홍보자 등일 경우</Body3>
+          <div style={{ display: 'flex' }}>
+            <Body3>임의로 해당&nbsp;</Body3>
+            <Body4>계정을 사용 중지 처리할 수 있어요.</Body4>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.check}>
+        <CheckBox
+          value={checked}
+          onClick={setChecked}
+          label="위 내용을 모두 확인했으며, 동의해요."
+        />
+      </div>
+      <Button
+        onClick={handleClick}
+        disabled={!checked}
+        style={{ marginTop: '22px', marginBottom: '32px' }}
+      >
+        다음
+      </Button>
+    </>
   );
 }

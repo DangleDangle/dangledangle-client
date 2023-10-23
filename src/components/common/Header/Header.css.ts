@@ -6,7 +6,7 @@ export const headerColor = createVar('headerColor');
 export const HEADER_HEIGHT = 56;
 export const container = style({
   position: 'sticky',
-  zIndex: 1,
+  zIndex: 20,
   top: 0,
   width: '100%',
   display: 'flex',
@@ -49,8 +49,7 @@ export const myPageIcon = style({
 });
 
 export const headerColorOn = style({
-  backgroundColor: palette.white,
-  transition: '0.2s ease-in-out'
+  backgroundColor: palette.white
 });
 export const headerColorOff = style({
   backgroundColor: palette.background

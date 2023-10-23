@@ -5,16 +5,17 @@ import EmphasizedTitle, {
 import TextField from '@/components/common/TextField/TextField';
 import useHeader from '@/hooks/useHeader';
 import { formatPhone } from '@/utils/formatInputs';
-import { useCallback } from 'react';
+import { use, useCallback, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { OnNextProps } from '../page';
-import * as styles from './../styles.css';
+import { OnNextProps } from './page';
+import * as styles from '../styles.css';
 
 export default function Hp({ onNext }: OnNextProps) {
   const {
     register,
     formState: { errors },
-    watch
+    watch,
+    setFocus
   } = useFormContext();
   const hpValue = watch('phoneNumber');
 
@@ -22,6 +23,10 @@ export default function Hp({ onNext }: OnNextProps) {
     thisPage: 2,
     entirePage: 4
   });
+
+  useEffect(() => {
+    setFocus('phoneNumber');
+  }, []);
 
   const handlePhoneNumberChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

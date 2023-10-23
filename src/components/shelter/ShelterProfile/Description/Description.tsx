@@ -1,22 +1,40 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 import * as styles from './Description.css';
 import { Body3 } from '@/components/common/Typography';
 import useBooleanState from '@/hooks/useBooleanState';
+import useShelterHomeInfo from '@/api/shelter/{shelterId}/useShelterHomeInfo';
+import breakLine from '@/utils/breakLine';
 
 interface DescriptionProps {
+  shelterId: number;
   description: string;
   summaryLength?: number;
 }
 
 const SUMMARY_LENGTH_DEFAULT = 50;
+const SUMMARY_LINES_DEFAULT = 2;
 
 export default function Description({
+  shelterId,
   description,
   summaryLength = SUMMARY_LENGTH_DEFAULT
 }: DescriptionProps) {
   const [isExpanded, , , toggleExpaneded] = useBooleanState(false);
-  const isLongDescription = description.length > summaryLength;
+  const query = useShelterHomeInfo(shelterId);
+
+  const freshDescription = useMemo(
+    () => query.data?.description || description,
+    [description, query.data?.description]
+  );
+
+  const isLongDescription = useMemo(
+    () =>
+      freshDescription.length > summaryLength ||
+      freshDescription.split('\n').length > SUMMARY_LINES_DEFAULT,
+    [freshDescription, summaryLength]
+  );
+
   const handleClick = () => {
     toggleExpaneded();
   };
@@ -26,8 +44,8 @@ export default function Description({
       <div className={styles.wrapper}>
         <Body3 className={styles.description({ expanded: isExpanded })}>
           {isLongDescription && !isExpanded
-            ? `${description.slice(0, 50)}...`
-            : description}
+            ? `${freshDescription.slice(0, 50)}...`
+            : breakLine(freshDescription)}
         </Body3>
         {isLongDescription && (
           <Body3 className={styles.moreButton} onClick={handleClick}>

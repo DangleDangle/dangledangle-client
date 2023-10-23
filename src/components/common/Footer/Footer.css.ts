@@ -23,9 +23,12 @@ export const footerWrapper = recipe({
   }
 });
 
-export const linkWrapper = style({
+export const dot = style({
+  marginRight: '10px'
+});
+
+export const footerContent = style({
   display: 'flex',
-  flexDirection: 'row',
   alignItems: 'center',
   columnGap: 10,
   opacity: 0.6,

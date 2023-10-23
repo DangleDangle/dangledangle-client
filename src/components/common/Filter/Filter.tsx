@@ -43,6 +43,7 @@ interface FilterProps {
 
 export interface FilterRef {
   setPickOption: (option: string) => void;
+  name: string;
 }
 const Filter = forwardRef<FilterRef, FilterProps>(
   ({ name, label, options, onChange }: FilterProps, ref) => {
@@ -53,10 +54,12 @@ const Filter = forwardRef<FilterRef, FilterProps>(
       setPickOption(
         typeof options[0] === 'string' ? options[0] : options[0]?.label
       );
-    }, [options]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [name]);
 
     useImperativeHandle(ref, () => ({
-      setPickOption
+      setPickOption,
+      name
     }));
 
     const handleChangeData = useCallback(
@@ -67,6 +70,14 @@ const Filter = forwardRef<FilterRef, FilterProps>(
       },
       [name, onChange, closeFilter]
     );
+
+    useEffect(() => {
+      if (isFilter) {
+        document.body.style.overflowY = 'hidden';
+      } else {
+        document.body.style.overflowY = '';
+      }
+    }, [isFilter]);
 
     return (
       <>

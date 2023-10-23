@@ -68,7 +68,7 @@ export const noti = style({
 });
 export const divider = style({
   width: `calc(100% - 2 * ${GLOBAL_PADDING_X}px)`,
-  marginLeft: GLOBAL_PADDING_X,
+  transform: `translateX(${GLOBAL_PADDING_X}px)`,
   backgroundColor: palette.gray200,
   height: '1px',
   margin: '8 0'

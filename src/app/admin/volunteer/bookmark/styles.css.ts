@@ -9,3 +9,7 @@ export const contianer = style({
   backgroundColor: palette.white,
   minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`
 });
+export const text = style({
+  textAlign: 'center',
+  paddingTop: '30px'
+});

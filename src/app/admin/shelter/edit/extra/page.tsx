@@ -21,6 +21,7 @@ import yup from '@/utils/yup';
 import useHeader from '@/hooks/useHeader';
 import { OutLink } from '@/types/shelter';
 import useBooleanState from '@/hooks/useBooleanState';
+import useRouteGuard from '@/hooks/useRouteGuard';
 
 type FormValues = {
   instagram?: string;
@@ -71,13 +72,14 @@ export default function ShelterEditExtraPage() {
     handleSubmit,
     watch,
     reset,
-    formState: { errors }
+    formState: { errors, isDirty }
   } = useForm<FormValues>({
     mode: 'all',
     reValidateMode: 'onChange',
     resolver: yupResolver(schema)
   });
   const router = useRouter();
+  const { setRoutable } = useRouteGuard();
   const shelterQuery = useShelterInfo();
   const { mutateAsync: update } = useUpdateAdditionalInfo();
   const [loading, loadingOn] = useBooleanState(false);
@@ -86,20 +88,27 @@ export default function ShelterEditExtraPage() {
   const bankName = watch('bankName');
   const accountNumber = watch('accountNumber');
 
-  const isAccountCompleted = Boolean(accountNumber) !== Boolean(bankName);
+  const isAccountCompleted = Boolean(accountNumber) === Boolean(bankName);
   const isNotError = isEmpty(errors);
 
-  const isSubmittable = isAccountCompleted && isNotError;
-  const accountNumberError = !!(isAccountCompleted && !accountNumber)
-    ? {
-        message: '계좌번호를 입력해주세요'
-      }
-    : undefined;
-  const bankNameError = !!(isAccountCompleted && !bankName)
-    ? {
-        message: '은행명를 입력해주세요'
-      }
-    : undefined;
+  const isSubmittable = isAccountCompleted && isNotError && isDirty;
+  const accountNumberError =
+    !isAccountCompleted && !accountNumber
+      ? {
+          message: '계좌번호를 입력해주세요'
+        }
+      : undefined;
+  const bankNameError =
+    !isAccountCompleted && !bankName
+      ? {
+          message: '은행명를 입력해주세요'
+        }
+      : undefined;
+
+  useEffect(() => {
+    if (isSubmittable) setRoutable(false);
+    else setRoutable(true);
+  }, [isSubmittable, setRoutable]);
 
   useEffect(() => {
     if (shelterQuery.isSuccess) {
@@ -156,14 +165,13 @@ export default function ShelterEditExtraPage() {
 
   const onSubmit = useCallback(
     async (data: FormValues) => {
-      console.log('🔸 → onSubmit → data:', data);
       loadingOn();
       const payload = getPayload(data);
-      console.log('🔸 → ShelterEditExtraPage → payload:', payload);
+      setRoutable(true);
       await update({ payload });
       router.replace('/admin/shelter/edit' + window.location.hash);
     },
-    [getPayload, loadingOn, router, update]
+    [getPayload, loadingOn, router, setRoutable, update]
   );
 
   return (
@@ -199,7 +207,7 @@ export default function ShelterEditExtraPage() {
           />
           <div>
             <Caption2 color="gray600">
-              카카오페이 코드송금 링크를 입력하면, 원터치로 후원금 모금이
+              카카오페이 코드 송금 링크를 입력하면, 원터치로 후원금 모금이
               가능해요.
             </Caption2>
             <br />
@@ -207,9 +215,9 @@ export default function ShelterEditExtraPage() {
               className={textButton}
               element={'a'}
               color="primary300"
-              href={process.env.NEXT_PUBLIC_QNA_URL}
+              onClick={() => window.open(process.env.NEXT_PUBLIC_QNA_URL)}
             >
-              코드송금 링크는 어떻게 생성하나요?
+              코드 송금 링크는 어떻게 생성하나요?
             </Caption2>
           </div>
         </div>
@@ -241,7 +249,7 @@ export default function ShelterEditExtraPage() {
         />
       </div>
       <FixedFooter>
-        <Button loading={loading} itemType="submit" disabled={isSubmittable}>
+        <Button loading={loading} itemType="submit" disabled={!isSubmittable}>
           저장하기
         </Button>
       </FixedFooter>

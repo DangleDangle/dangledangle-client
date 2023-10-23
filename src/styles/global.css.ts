@@ -4,7 +4,8 @@ import { palette } from './color';
 
 globalStyle('body', {
   backgroundColor: palette.background,
-  overflowX: 'hidden'
+  overflowX: 'hidden',
+  color: palette.gray900
 });
 globalStyle('main, footer', { backgroundColor: palette.background });
 globalStyle('ul, ol, li', { listStyle: 'none' });

@@ -23,10 +23,7 @@ export default function useParticipateVolEvent(
       participate(shelterId, volunteerEventId),
     {
       onSuccess: (data, variables, context) => {
-        return queryClient.invalidateQueries({
-          queryKey: queryKey.all,
-          refetchType: 'all'
-        });
+        return queryClient.invalidateQueries();
       },
       ...options
     }

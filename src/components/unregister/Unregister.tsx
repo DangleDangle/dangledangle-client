@@ -12,7 +12,6 @@ import useMyInfo from '@/api/mypage/useMyInfo';
 import { UserRole } from '@/constants/user';
 import { MyShelterInfo, MyVolInfo } from '@/api/mypage/mypage';
 import LoadingIndicator from '../common/Button/LoadingIndicator';
-import { useRouter } from 'next/navigation';
 import { shelterWithdraw, withdraw } from '@/api/volunteer/my/withdraw';
 import useLogout from '@/api/mypage/useLogout';
 
@@ -23,7 +22,6 @@ interface UnregisterProps {
 export default function Unregister({ role }: UnregisterProps) {
   useHeader({ title: '회원 탈퇴' });
   const { data } = useMyInfo(role);
-  const router = useRouter();
   const { mutate: logout } = useLogout();
 
   const [check, setCheck] = useState(false);
@@ -33,15 +31,12 @@ export default function Unregister({ role }: UnregisterProps) {
   };
 
   const handleSubmint = async () => {
-    console.log(12123);
-
     if (role === 'SHELTER') {
       await shelterWithdraw();
     } else {
       await withdraw();
     }
     logout();
-    router.push('/');
   };
 
   if (!data) return <LoadingIndicator color="primary" />;

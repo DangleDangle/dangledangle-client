@@ -57,8 +57,11 @@ export default function ScheduleCard({
   )} (${getDuration(startAt, endAt)})`;
 
   return (
-    <article className={clsx([styles.container, styles.paintFirstCard])}>
-      <ArrowRight className={styles.arrowIcon} onClick={moveTo} />
+    <article
+      className={clsx([styles.container, styles.paintFirstCard])}
+      onClick={moveTo}
+    >
+      <ArrowRight className={styles.arrowIcon} />
       <div className={styles.timeInfo}>
         <Day>{eventDay}</Day>
         <Duringtime>{`${duringTime}`}</Duringtime>

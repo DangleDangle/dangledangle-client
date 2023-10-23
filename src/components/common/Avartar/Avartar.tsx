@@ -53,29 +53,35 @@ const ImageAvartar: React.FC<AvartarProps & { imagePath: string }> = ({
   style
 }) => {
   return (
-    <Image
-      width={size}
-      height={size}
-      className={clsx(
-        styles.avartar({
-          shape
-        }),
-        className
-      )}
-      style={{
-        ...style
-      }}
-      src={imagePath}
-      alt={alt}
+    <div
+      className={styles.imageWrapper}
+      style={{ width: `${size}px`, height: `${size}px` }}
     >
+      <Image
+        width={size}
+        height={size}
+        className={clsx(
+          styles.avartar({
+            shape
+          }),
+          className
+        )}
+        style={{
+          ...style
+        }}
+        src={imagePath}
+        alt={alt}
+      />
       {children}
-    </Image>
+    </div>
   );
 };
 
 const Avartar: React.FC<AvartarProps> = ({ children, imagePath, ...props }) => {
   return typeof imagePath === 'string' && imagePath !== '' ? (
-    <ImageAvartar {...props} imagePath={imagePath}></ImageAvartar>
+    <ImageAvartar {...props} imagePath={imagePath}>
+      {children}
+    </ImageAvartar>
   ) : (
     <DefaultAvarta {...props}>{children}</DefaultAvarta>
   );

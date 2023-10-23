@@ -8,7 +8,7 @@ import { ButtonText1 } from '@/components/common/Typography';
 import CarouselItem from '@/components/shelter/CarouselItem/CarouselItem';
 import useHeader from '@/hooks/useHeader';
 import { useRouter } from 'next/navigation';
-import { OnNextProps } from '../page';
+import { OnNextProps } from './page';
 import * as styles from '../styles.css';
 import { Register_1, Register_2, Register_3, Register_4 } from '@/asset/icons';
 import { assignInlineVars } from '@vanilla-extract/dynamic';

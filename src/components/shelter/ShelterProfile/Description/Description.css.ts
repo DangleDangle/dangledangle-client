@@ -27,5 +27,6 @@ export const description = recipe({
 export const moreButton = style({
   display: 'inline',
   marginLeft: 8,
-  textAlign: 'right'
+  textAlign: 'right',
+  cursor: 'pointer'
 });

@@ -1,15 +1,23 @@
 import { palette } from '@/styles/color';
-import { GLOBAL_PADDING_X } from '@/styles/global.css';
+import { GLOBAL_PADDING_X, expandGlobalPadding } from '@/styles/global.css';
 import { globalStyle, style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 
+export const container = style([
+  expandGlobalPadding,
+  {
+    backgroundColor: palette.white,
+    overflowX: 'hidden'
+  }
+]);
 export const calendar = style({
-  width: 'calc(100% + 40px)',
-  margin: 'auto',
-  backgroundColor: palette.white,
-  color: palette.gray900,
+  width: '100%',
   transform: `translateX(${-GLOBAL_PADDING_X}px)`,
-  padding: '20px 0'
+  padding: `${GLOBAL_PADDING_X}px`
+});
+
+export const footer = style({
+  transform: 'translateY(-20px)'
 });
 
 export const dotWrapper = style({
@@ -58,10 +66,6 @@ globalStyle(`${calendar} &::before`, {
 });
 
 globalStyle(`${calendar} button`, {
-  width: '32px',
-  height: '32px',
-  borderRadius: '6px',
-  padding: '4px 6px 4px 6px',
   textAlign: 'center'
 });
 
@@ -69,37 +73,46 @@ globalStyle(`${calendar} button:enabled:hover`, {
   cursor: 'pointer'
 });
 
+globalStyle(`${calendar} .react-calendar__viewContainer`, {});
 // 캘린더 인디케이터
 globalStyle(`${calendar} .react-calendar__navigation`, {
   display: 'flex',
-  alignItems: 'center',
-  height: '44px',
-  padding: '0px 80px 0px 80px'
+  margin: '0 auto',
+  width: 'fit-content',
+  columnGap: 16,
+  alignItems: 'center'
 });
 
-globalStyle(`${calendar} .react-calendar__navigation button`, {
-  fontSize: '14px',
-  fontFamily: 'Pretendard',
-  fontStyle: 'normal',
-  fontWeight: 700
+globalStyle(`${calendar} .react-calendar__navigation > *`, {
+  height: 24
 });
 
+globalStyle(`${calendar} .react-calendar__navigation__label`, {
+  fontSize: '16px',
+  fontWeight: 600
+});
+
+globalStyle(`${calendar} .react-calendar__month-view`, {
+  padding: `12px`
+});
 // 요일 column
 globalStyle(`${calendar} .react-calendar__month-view__weekdays`, {
-  padding: '12px 12px 4px 12px',
   fontSize: '12px',
-  fontFamily: 'Pretendard',
-  fontStyle: 'normal',
   fontWeight: 500,
   lineHeight: '14px',
-  color: '#6c6c6c',
-  textAlign: 'center'
+  color: palette.gray600,
+  textAlign: 'center',
+  padding: '3px 0',
+  marginBottom: '4px'
 });
 
 // 날짜 container
-globalStyle(`${calendar} .react-calendar__month-view__days`, {
-  padding: '0px 12px 0px 12px'
-});
+globalStyle(
+  `${calendar} .react-calendar__month-view__weekdays__weekday--weekend`,
+  {
+    color: palette.primary300
+  }
+);
 
 globalStyle(`${calendar} .react-calendar__tile`, {
   display: 'flex',
@@ -107,14 +120,13 @@ globalStyle(`${calendar} .react-calendar__tile`, {
   alignItems: 'center',
   justifyContent: 'center',
 
-  fontSize: '12px',
-  fontFamily: 'Pretendard',
-  fontStyle: 'normal',
-  fontWeight: 500,
-  lineHeight: '14px',
-  color: '#6c6c6c',
+  fontSize: '14px',
+  fontWeight: 400,
+  lineHeight: '20px',
+  color: palette.gray900,
 
-  position: 'relative'
+  position: 'relative',
+  height: '32px'
 });
 
 globalStyle(`${calendar} .react-calendar__tile::before`, {
@@ -126,37 +138,44 @@ globalStyle(`${calendar} .react-calendar__tile::before`, {
   zIndex: -100
 });
 
-// 날짜 호버됐을 시
-globalStyle(`${calendar} .react-calendar__tile:enabled:hover`, {
-  color: palette.primary200
-});
-globalStyle(`${calendar} .react-calendar__tile:enabled:hover::before`, {
-  background: palette.primary50
+globalStyle(`${calendar} .react-calendar__month-view__days`, {
+  rowGap: 4
 });
 
 globalStyle(`${calendar} .react-calendar__month-view__days__day--weekend`, {
-  color: palette.error
+  color: palette.primary300
 });
 
 globalStyle(
   `${calendar} .react-calendar__month-view__days__day--neighboringMonth`,
   {
-    color: palette.gray200
+    opacity: 0.3
   }
 );
 
 // 오늘 날짜
 globalStyle(`${calendar} .react-calendar__tile--now `, {
-  color: palette.white
+  color: `${palette.white} !important`
 });
 globalStyle(`${calendar} .react-calendar__tile--now::before`, {
-  background: palette.gray900
+  background: `${palette.gray900} !important`
+});
+
+// 날짜 호버됐을 시
+globalStyle(`${calendar} .react-calendar__tile:enabled:hover`, {
+  color: palette.gray900
+});
+globalStyle(`${calendar} .react-calendar__tile:enabled:hover::before`, {
+  background: palette.gray200
 });
 
 // 선택한 날짜
-globalStyle(`${calendar} .react-calendar__tile--active:enabled:focus`, {
-  color: palette.gray800
+globalStyle(`${calendar} .react-calendar__tile--rangeBothEnds:enabled`, {
+  color: palette.gray900
 });
-globalStyle(`${calendar} .react-calendar__tile:enabled:focus::before`, {
-  background: palette.gray200
-});
+globalStyle(
+  `${calendar} .react-calendar__tile--rangeBothEnds:enabled::before`,
+  {
+    background: palette.gray200
+  }
+);

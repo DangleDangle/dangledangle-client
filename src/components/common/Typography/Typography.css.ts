@@ -1,10 +1,6 @@
 import { palette } from '@/styles/color';
 import { style } from '@vanilla-extract/css';
 
-export const base = style({
-  color: palette.gray900
-});
-
 export const textButton = style({
   color: palette.primary300,
   cursor: 'pointer',
@@ -13,7 +9,6 @@ export const textButton = style({
 
 export const variants = {
   h1: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,
@@ -23,7 +18,6 @@ export const variants = {
   ]),
 
   h2: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 600,
@@ -33,7 +27,6 @@ export const variants = {
   ]),
 
   h3: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,
@@ -43,7 +36,6 @@ export const variants = {
   ]),
 
   h4: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 600,
@@ -53,7 +45,6 @@ export const variants = {
   ]),
 
   body1: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 400,
@@ -63,7 +54,6 @@ export const variants = {
   ]),
 
   body2: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,
@@ -73,7 +63,6 @@ export const variants = {
   ]),
 
   body3: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 400,
@@ -83,7 +72,6 @@ export const variants = {
   ]),
 
   body4: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 600,
@@ -93,7 +81,6 @@ export const variants = {
   ]),
 
   button1: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,
@@ -103,7 +90,6 @@ export const variants = {
   ]),
 
   button2: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 400,
@@ -113,7 +99,6 @@ export const variants = {
   ]),
 
   button3: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,
@@ -123,7 +108,6 @@ export const variants = {
   ]),
 
   caption1: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,
@@ -133,7 +117,6 @@ export const variants = {
   ]),
 
   caption2: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 400,
@@ -143,7 +126,6 @@ export const variants = {
   ]),
 
   caption3: style([
-    base,
     {
       fontStyle: 'normal',
       fontWeight: 500,

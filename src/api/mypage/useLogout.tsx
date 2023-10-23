@@ -2,6 +2,7 @@ import { useAuthContext } from '@/providers/AuthContext';
 import { useMutation } from '@tanstack/react-query';
 import useToast from '@/hooks/useToast';
 import { fe } from '../instance';
+import { STORAGE_KEY_HOME_CALENDAR_FILTER_INPUT } from '@/constants/localStorageKeys';
 
 export default function useLogout() {
   const { logout: clientLogout } = useAuthContext();
@@ -18,6 +19,7 @@ export default function useLogout() {
     onSuccess: response => {
       clientLogout();
       location.href = '/login';
+      localStorage.removeItem(STORAGE_KEY_HOME_CALENDAR_FILTER_INPUT);
       toastOn('로그아웃이 완료되었습니다.');
     },
     onError: error => {

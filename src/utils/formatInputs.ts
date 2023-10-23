@@ -29,3 +29,10 @@ export function formatPhone(input: string) {
 export function removeDash(input: string) {
   return input.replace(/-/g, '');
 }
+
+export const handlePhoneNumberChange = (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const value = event.target.value;
+  event.target.value = formatPhone(value);
+};

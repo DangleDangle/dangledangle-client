@@ -3,7 +3,8 @@ import { style } from '@vanilla-extract/css';
 export const form = style({
   display: 'flex',
   flexDirection: 'column',
-  rowGap: 32
+  rowGap: 32,
+  paddingBottom: 100
 });
 
 export const label = style({
