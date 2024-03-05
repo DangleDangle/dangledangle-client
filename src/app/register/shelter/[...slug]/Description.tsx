@@ -5,17 +5,23 @@ import EmphasizedTitle, {
 import TextArea from '@/components/common/TextField/TextArea';
 import useHeader from '@/hooks/useHeader';
 import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form';
-import { OnNextProps } from '../page';
-import * as styles from './../styles.css';
+import { OnNextProps } from './page';
+import * as styles from '../styles.css';
+import { useEffect } from 'react';
 
 export default function Description({ onSubmit }: OnNextProps) {
   const {
     handleSubmit,
     register,
     formState: { errors },
-    watch
+    watch,
+    setFocus
   } = useFormContext();
   const descriptionValue = watch('description');
+
+  useEffect(() => {
+    setFocus('description');
+  }, []);
 
   const setHeader = useHeader({
     thisPage: 4,

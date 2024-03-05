@@ -7,9 +7,11 @@ import { Body2, H4 } from '../Typography';
 import * as styles from './Header.css';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
 import { palette } from '@/styles/color';
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import MainHeader from './MainHeader';
 import { UserRole } from '@/constants/user';
+import useSafariBackgroundControll from '@/hooks/useSafariBackgroundControll';
+import { DOM_ID_BACKGROUND_THEME } from '@/constants/dom';
 
 interface HeaderComponentProps {
   initColor: string;
@@ -37,8 +39,10 @@ export default function Header({
   const router = useRouter();
   const pathName = usePathname();
   const navigate = () => {
-    router.back();
+    // 웹페이지 처음 방문 했을 시 window.history.length === 1
+    history.length === 1 ? router.push('/') : router.back();
   };
+  const { setSafariBackground } = useSafariBackgroundControll();
 
   const headerColor = useMemo(() => {
     if (!color || initColor === color) {
@@ -55,6 +59,10 @@ export default function Header({
       return title;
     }
   }, [title, initTitle]);
+
+  useLayoutEffect(() => {
+    setSafariBackground(headerColor);
+  }, [setSafariBackground, headerColor]);
 
   if (pathName === '/') {
     return <MainHeader initRole={initRole} shelterId={shelterId!} />;

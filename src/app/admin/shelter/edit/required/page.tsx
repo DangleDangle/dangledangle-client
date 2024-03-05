@@ -2,7 +2,7 @@
 import Button from '@/components/common/Button/Button';
 import TextField from '@/components/common/TextField/TextField';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as styles from './styles.css';
 import { Caption1 } from '@/components/common/Typography';
@@ -18,6 +18,7 @@ import yup from '@/utils/yup';
 import useHeader from '@/hooks/useHeader';
 import { SearchedAddress } from '@/types/shelter';
 import useBooleanState from '@/hooks/useBooleanState';
+import useRouteGuard from '@/hooks/useRouteGuard';
 
 type FormValues = {
   name: string;
@@ -70,7 +71,7 @@ export default function ShelterEditRequiredPage() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors }
+    formState: { errors, isDirty }
   } = useForm<FormValues>({
     mode: 'all',
     reValidateMode: 'onChange',
@@ -78,6 +79,7 @@ export default function ShelterEditRequiredPage() {
   });
 
   const router = useRouter();
+  const { setRoutable } = useRouteGuard();
   const shelterQuery = useShelterInfo();
   const { mutateAsync: update } = useUpdateEssentialInfo();
   const [searchedAddress, setSearchedAddress] = useState<SearchedAddress>();
@@ -110,7 +112,6 @@ export default function ShelterEditRequiredPage() {
 
   const onSubmit = useCallback(
     async (data: FormValues) => {
-      console.log('🔸 → onSubmit → data:', data);
       if (!shelterQuery.isSuccess || !searchedAddress) return;
       loadingOn();
       const payload: ShelterEssentialInfoPayload = {
@@ -121,11 +122,26 @@ export default function ShelterEditRequiredPage() {
           addressDetail: data.addressDetail
         }
       };
+      setRoutable(true);
       await update({ payload });
       router.replace('/admin/shelter/edit');
     },
-    [loadingOn, router, searchedAddress, shelterQuery.isSuccess, update]
+    [
+      loadingOn,
+      router,
+      searchedAddress,
+      setRoutable,
+      shelterQuery.isSuccess,
+      update
+    ]
   );
+
+  const isSubmittable = isDirty && isEmpty(errors) && Boolean(searchedAddress);
+
+  useEffect(() => {
+    if (isSubmittable) setRoutable(false);
+    else setRoutable(true);
+  }, [isSubmittable, setRoutable]);
 
   return (
     <form className="page" onSubmit={handleSubmit(onSubmit)}>
@@ -164,7 +180,7 @@ export default function ShelterEditRequiredPage() {
       </div>
       <Button
         className={styles.button}
-        disabled={!isEmpty(errors) || !searchedAddress}
+        disabled={!isSubmittable}
         itemType="submit"
         loading={loading}
       >

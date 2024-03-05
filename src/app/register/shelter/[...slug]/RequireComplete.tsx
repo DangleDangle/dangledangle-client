@@ -1,8 +1,8 @@
 import Button from '@/components/common/Button/Button';
 import { H2, H3 } from '@/components/common/Typography';
 import Image from 'next/image';
-import { OnNextProps } from '../page';
-import * as styles from './../styles.css';
+import { OnNextProps } from './page';
+import * as styles from '../styles.css';
 import useHeader from '@/hooks/useHeader';
 import { useFormContext } from 'react-hook-form';
 import { MouseEventHandler } from 'react';

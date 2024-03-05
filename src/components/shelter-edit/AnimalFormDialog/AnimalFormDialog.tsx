@@ -18,6 +18,7 @@ import yup from '@/utils/yup';
 import * as styles from './AnimalFormDialog.css';
 import { ObservationAnimal } from '@/types/shelter';
 import useBooleanState from '@/hooks/useBooleanState';
+import useDialog from '@/hooks/useDialog';
 interface AnimalFormDialogProps extends Pick<ModalProps, 'open' | 'onClose'> {
   initialData?: ObservationAnimal;
   data?: ObservationAnimal;
@@ -78,6 +79,7 @@ export const AnimalForm: React.FC<AnimalFormProps> = ({
   const {
     onChangeImage,
     isUploading,
+    uploadError,
     src: profileImageUrl,
     setSrc: setProfileImageUrl
   } = useImageUploader();
@@ -161,6 +163,8 @@ export const AnimalForm: React.FC<AnimalFormProps> = ({
         shape="square"
         defaultImage="puppy"
         size="80"
+        loading={isUploading}
+        error={uploadError}
         onChangeCallback={onChangeImage}
       />
 
@@ -228,8 +232,23 @@ const AnimalFormDialog: React.FC<AnimalFormDialogProps> = ({
   onClose,
   initialData
 }) => {
+  const { dialogOn, dialogOff } = useDialog();
+  const handleClose = useCallback(() => {
+    dialogOn({
+      message: '앗! 이대로 나가면 입력하신 정보가 모두 사라져요!',
+      confirm: {
+        text: '나가기',
+        variant: 'filled',
+        onClick: () => {
+          onClose();
+          dialogOff();
+        }
+      },
+      close: {}
+    });
+  }, [dialogOff, dialogOn, onClose]);
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleClose} zIndex={99}>
       <AnimalForm initialData={initialData} onClose={onClose} />
     </Modal>
   );

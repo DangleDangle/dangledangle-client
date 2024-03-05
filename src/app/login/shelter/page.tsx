@@ -34,7 +34,7 @@ export default function ShelterLogin() {
 
   const router = useRouter();
   const toastOn = useToast();
-  const setHeader = useHeader({ title: '보호소 파트너로 시작하기' });
+  useHeader({ title: '보호소 파트너로 시작하기' });
 
   const { logout } = useAuthContext();
   useEffect(logout, [logout]);
@@ -44,11 +44,11 @@ export default function ShelterLogin() {
   const handleLogin = useCallback(
     async (data: LoginPayload) => {
       try {
+        await mutateAsync(data);
         const redirectPath = Cookies.get(COOKIE_REDIRECT_URL) || '';
         const redirectTo = `${location.origin}${decodeURIComponent(
           redirectPath
         )}`;
-        await mutateAsync(data);
         location.href = redirectTo;
       } catch (e) {
         toastOn('로그인에 실패했습니다.');
@@ -117,7 +117,7 @@ export default function ShelterLogin() {
       </div>
 
       <div className={styles.registerTextWrapper}>
-        <Body3>아직 dangledangle 회원이 아니신가요?</Body3>
+        <Body3>아직 댕글댕글 회원이 아니신가요?</Body3>
         <ButtonText1
           style={{ cursor: 'pointer' }}
           onClick={() => router.push('/register/shelter')}

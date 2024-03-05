@@ -8,6 +8,7 @@ import {
   MypageTerms
 } from '@/asset/icons';
 import { Body1, ButtonText2 } from '@/components/common/Typography';
+import { URL_ONETOONE, URL_TERMS_OF_USE } from '@/constants/landingURL';
 import useDialog from '@/hooks/useDialog';
 import useHeader from '@/hooks/useHeader';
 import Link from 'next/link';
@@ -63,8 +64,16 @@ export default function MyPageMain({
       link: pathname + '/volunteer/bookmark',
       Svg: MypageStar
     },
-    { label: '문의하기', link: '', Svg: MypageChat },
-    { label: '이용약관', link: '', Svg: MypageTerms }
+    {
+      label: '문의하기',
+      link: URL_ONETOONE,
+      Svg: MypageChat
+    },
+    {
+      label: '이용약관',
+      link: URL_TERMS_OF_USE,
+      Svg: MypageTerms
+    }
   ];
 
   return (
@@ -73,19 +82,32 @@ export default function MyPageMain({
         {settings.map(({ link, label, Svg }, index) => {
           if (index === 0 && isShelterRole) return null;
 
-          return (
-            <Link href={link} key={index}>
-              <div className={styles.accountBox}>
-                <div className={styles.accountTxt}>
-                  <Svg />
-                  <Body1>{label}</Body1>
+          if (index === 0) {
+            return (
+              <Link href={link} key={index}>
+                <div className={styles.accountBox}>
+                  <div className={styles.accountTxt}>
+                    <Svg />
+                    <Body1>{label}</Body1>
+                  </div>
+                  <ArrowRightLg />
                 </div>
-                <ArrowRightLg />
-              </div>
-
-              {index === 2 ? <div className={styles.divider} /> : null}
-            </Link>
-          );
+              </Link>
+            );
+          } else {
+            return (
+              <a href={link} key={index} target="_blank">
+                <div className={styles.accountBox}>
+                  <div className={styles.accountTxt}>
+                    <Svg />
+                    <Body1>{label}</Body1>
+                  </div>
+                  <ArrowRightLg />
+                </div>
+                {index === 2 && <div className={styles.divider} />}
+              </a>
+            );
+          }
         })}
       </div>
 

@@ -13,7 +13,7 @@ type Props = {
 
 export default function FormProvider({
   children,
-  onSubmit,
+  onSubmit = () => {},
   methods,
   style
 }: Props) {

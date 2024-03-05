@@ -1,7 +1,8 @@
+import { DOM_ID_BACKGROUND_THEME } from '@/constants/dom';
 import { HeaderState, headerState } from '@/store/header';
 import { palette } from '@/styles/color';
 import { useLayoutEffect } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 export interface UseHeaderProps extends Omit<HeaderState, 'title'> {
   title?: string;
@@ -39,7 +40,6 @@ const useHeader = ({
     entirePage,
     RightSideComponent
   ]);
-
   return setHeader;
 };
 

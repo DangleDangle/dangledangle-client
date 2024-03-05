@@ -6,9 +6,10 @@ import protectedURLs from './utils/middleware/hooks/protectedURLs';
 export async function middleware(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
 
-  const adminURLsResult = protectedURLs({ req, requestHeaders });
-  if (adminURLsResult.redirect) {
-    return adminURLsResult.response;
+  const { redirect, response } = protectedURLs({ req, requestHeaders });
+
+  if (redirect) {
+    return response;
   }
 
   appendHeaderTitle({ req, requestHeaders });
@@ -21,5 +22,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/((?!.*\\.).*)'
+  matcher: ['/((?!.*\\.).*)', '/api/(.*)']
 };

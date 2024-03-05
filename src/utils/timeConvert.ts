@@ -43,7 +43,7 @@ export function isDatePast(dateStr: string | Date) {
 }
 
 export function pmamConvert(time: string | Date) {
-  const convertedTime = moment(time, 'HH:mm');
+  const convertedTime = moment(time, 'YYYY-MM-DD HH:mm:ss');
   const formattedTime =
     convertedTime.minute() === 0
       ? convertedTime.format('A h시')
@@ -55,8 +55,8 @@ export function getDuration(
   startTimeStr: string | Date,
   endTimeStr: string | Date
 ) {
-  const start = moment(startTimeStr, 'HH:mm');
-  const end = moment(endTimeStr, 'HH:mm');
+  const start = moment(startTimeStr, 'YYYY-MM-DD HH:mm:ss');
+  const end = moment(endTimeStr, 'YYYY-MM-DD HH:mm:ss');
   const hours = end.diff(start, 'hours');
   const minutes = end.subtract(hours, 'hours').diff(start, 'minutes');
 

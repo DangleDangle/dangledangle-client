@@ -22,6 +22,10 @@ export const headerServerSideRenderProp: HeaderServerSideRenderProp[] = [
     title: '비밀번호 찾기'
   },
   {
+    url: '/admin/shelter/edit/password',
+    title: '비밀번호 변경'
+  },
+  {
     url: '/register/shelter',
     title: '보호소 파트너 계정 가입'
   },

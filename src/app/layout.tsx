@@ -11,15 +11,18 @@ import * as styles from './layout.css';
 import Footer from '@/components/common/Footer/Footer';
 import { COOKIE_ACCESS_TOKEN_KEY } from '@/constants/cookieKeys';
 import { cookies } from 'next/headers';
+import SafariBackGround from '@/components/global/Meta/SafariBackGround';
 
 export const metadata = {
-  metadataBase: new URL('https://dangledangle.vercel.app'),
-  title: '댕글댕글',
+  title: {
+    template: '%s | 댕글댕글',
+    default: '댕글댕글'
+  },
   description: '더 나은 세상을 만들어봐요!',
   openGraph: {
     title: '댕글댕글',
     description: '더 나은 세상을 만들어봐요!',
-    url: 'https://dangledangle.vercel.app',
+    url: 'https://dangle.co.kr',
     images: [
       {
         url: '/images/DangleShare.png',
@@ -28,6 +31,11 @@ export const metadata = {
         alt: '댕글댕글'
       }
     ]
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1
   }
 };
 
@@ -40,6 +48,7 @@ export default function RootLayout({
 
   return (
     <html lang="ko" className={font.className}>
+      <SafariBackGround />
       <body className={styles.container}>
         <RecoilRootWrapper>
           <QueryProvider>

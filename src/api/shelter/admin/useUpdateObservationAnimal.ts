@@ -27,7 +27,7 @@ export default function useUpdateObservationAnimal(
     {
       onSuccess: (data, variables, context) => {
         options?.onSuccess && options.onSuccess(data, variables, context);
-        return queryClient.invalidateQueries(shelterKey.animalList());
+        return queryClient.invalidateQueries(shelterKey.animalLists());
       },
       ...options
     }

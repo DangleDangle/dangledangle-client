@@ -19,13 +19,6 @@ export const get = async (observationAnimalId: number) => {
   return response;
 };
 
-export const getAll = async () => {
-  const response = await api
-    .get('shelter/admin/observation-animal')
-    .then(res => res.json<ObservationAnimal[]>());
-  return response;
-};
-
 export const post = async (data: ObservationAnimalPayload) => {
   const response = await api
     .post(`shelter/admin/observation-animal`, {

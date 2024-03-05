@@ -15,9 +15,9 @@ import { GLOBAL_PADDING_X } from '@/styles/global.css';
 interface CarouselProps extends PropsWithChildren {}
 
 // 0 < SENSITIVITY <= 1. 값이 작을수록 인덱스가 쉽게 변경됨
-const SENSITIVITY = 0.4;
+const SENSITIVITY = 0.2;
 // 0 < WHEEL_SPEED <= 1 값이 클수록 휠 한 번에 스크롤되는 양이 많아짐
-const WHEEL_SPEED = 0.5;
+const WHEEL_SPEED = 0.8;
 
 const Carousel: React.FC<CarouselProps> = props => {
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -78,6 +78,7 @@ const Carousel: React.FC<CarouselProps> = props => {
 
   const scrollStart = useCallback((pageX: number) => {
     if (!containerRef.current) return;
+    document.body.style.overflowY = 'hidden';
     setIsMouseDown(true);
     setStartX(pageX - containerRef.current.offsetLeft);
     setStartScrollLeft(containerRef.current.scrollLeft);
@@ -94,6 +95,7 @@ const Carousel: React.FC<CarouselProps> = props => {
   );
 
   const scrollEnd = useCallback(() => {
+    document.body.style.overflowY = '';
     setIsMouseDown(false);
     if (!isMouseDown) return;
     paginate();

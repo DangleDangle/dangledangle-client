@@ -13,6 +13,7 @@ interface DangleCalendarProps
   onChange?: (value: Date, event: React.MouseEvent<HTMLButtonElement>) => void;
   mark?: (string | Date)[];
   onChangeMonth?: (value: Date) => void;
+  footer?: React.ReactNode;
 }
 
 export default function DangleCalendar({
@@ -21,6 +22,7 @@ export default function DangleCalendar({
   onChange,
   mark,
   onChangeMonth,
+  footer,
   ...rest
 }: DangleCalendarProps) {
   const handleDotIcon = useCallback(
@@ -37,20 +39,16 @@ export default function DangleCalendar({
             className={clsx([
               styles.dot({ date: isToday ? 'today' : 'other' })
             ])}
-          ></div>
+          />
         );
       }
-      return (
-        <>
-          <div className={styles.dotWrapper}>{html}</div>
-        </>
-      );
+      return <div className={styles.dotWrapper}>{html}</div>;
     },
     [mark]
   );
 
   return (
-    <div id={id} className={clsx(rest.className)}>
+    <div id={id} className={clsx(rest.className, styles.container)}>
       <Calendar
         {...rest}
         value={value}
@@ -62,13 +60,16 @@ export default function DangleCalendar({
         prev2Label={null}
         nextLabel={<NextIcon />}
         prevLabel={<PrevIcon />}
-        onActiveStartDateChange={({ activeStartDate, value, view }) => {
+        onActiveStartDateChange={({ activeStartDate }) => {
           activeStartDate && onChangeMonth?.(activeStartDate);
         }}
         tileContent={handleDotIcon}
         minDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
         maxDetail="month" // 상단 네비게이션에서 '월' 단위만 보이게 설정
+        navigationLabel={({ date }) => moment(date).format('YYYY.MM')}
+        calendarType="US"
       />
+      <div className={styles.footer}>{footer}</div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { ArrowFold, ArrowUnfold } from '@/asset/icons/index.ts';
 import moment from 'moment';
 import clsx from 'clsx';
 import { useAuthContext } from '@/providers/AuthContext.tsx';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface FoldToggleProps {
   isFolded: boolean;
@@ -28,11 +28,24 @@ const FoldToggle: React.FC<FoldToggleProps> = ({
 };
 
 export const CALENDAR_ID = 'home-calendar';
+
+const calculateCalendarHeight = () => {
+  // 캘린더 height transition을 위해 height 속성값이 필요
+
+  const calEl = document.getElementById(CALENDAR_ID);
+  const rc = calEl?.querySelector('.react-calendar');
+
+  if (!calEl || !rc) return;
+  setTimeout(() => {
+    calEl.style.height = rc.scrollHeight + 18 + 'px';
+  }, 0);
+};
 interface HomeCalendarProps {
   isFolded: boolean;
   setIsFolded: (isFolded: boolean) => void;
   bookmark: boolean;
   date: Date;
+  mark?: (string | Date)[];
   onClickDate: (value: Date) => void;
   onChangeBookmark: () => void;
 }
@@ -41,6 +54,7 @@ const HomeCalendar: React.FC<HomeCalendarProps> = ({
   setIsFolded,
   bookmark,
   date,
+  mark,
   onClickDate,
   onChangeBookmark
 }) => {
@@ -53,26 +67,43 @@ const HomeCalendar: React.FC<HomeCalendarProps> = ({
     }
   }, [hasFolded, isFolded]);
 
+  const handleChange = (value: Date) => {
+    calculateCalendarHeight();
+    onClickDate(value);
+  };
+
+  useEffect(() => {
+    calculateCalendarHeight();
+  }, []);
+
   return (
-    <div>
-      {(isFolded && (
-        <div className={styles.foldedHeader}>
-          <H4>{moment(date).format('YYYY.MM')}</H4>
-          <FoldToggle
-            className={styles.headerFoldToggle}
-            isFolded={true}
-            onClick={() => setIsFolded(false)}
-          />
-        </div>
-      )) || (
-        <div>
-          <DangleCalendar
-            id={CALENDAR_ID}
-            value={date}
-            onChange={onClickDate}
-            onChangeMonth={onClickDate}
-          />
-          <div className={styles.calendarFooter}>
+    <div style={{ position: 'relative' }}>
+      <div className={styles.fakeHeader} />
+      <div
+        className={clsx(styles.foldedHeader, {
+          [styles.hiddenFoldedHeader]: !isFolded
+        })}
+      >
+        <H4>{moment(date).format('YYYY.MM')}</H4>
+        <FoldToggle
+          className={styles.headerFoldToggle}
+          isFolded={true}
+          onClick={() => setIsFolded(false)}
+        />
+      </div>
+      <DangleCalendar
+        id={CALENDAR_ID}
+        className={clsx(styles.calendar, { [styles.hidden]: isFolded })}
+        value={date}
+        mark={mark}
+        onChange={handleChange}
+        onChangeMonth={handleChange}
+        footer={
+          <div
+            className={clsx(styles.calendarFooter, {
+              [styles.hidden]: isFolded
+            })}
+          >
             <div className={styles.toggleItem} onClick={onChangeBookmark}>
               {dangle_role !== 'SHELTER' && (
                 <>
@@ -86,8 +117,8 @@ const HomeCalendar: React.FC<HomeCalendarProps> = ({
               <FoldToggle isFolded={false} onClick={() => setIsFolded(true)} />
             )}
           </div>
-        </div>
-      )}
+        }
+      />
     </div>
   );
 };

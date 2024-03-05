@@ -5,6 +5,7 @@ import Button from '@/components/common/Button/Button';
 import Image from 'next/image';
 import { ANIMAL_GENDER_DICT } from '@/constants/animal';
 import { ObservationAnimal } from '@/types/shelter';
+import breakLine from '@/utils/breakLine';
 
 interface AnimalCardProps {
   data: ObservationAnimal;
@@ -44,11 +45,11 @@ export default function AnimalCard({
 
       {mode === 'edit' && onClickEdit && onClickDelete ? (
         <Caption1 element={'p'} className={styles.textClamp} color="gray600">
-          {specialNote}
+          {breakLine(specialNote)}
         </Caption1>
       ) : (
         <Caption1 element={'p'} className={styles.textFull} color="gray600">
-          {specialNote}
+          {breakLine(specialNote)}
         </Caption1>
       )}
 

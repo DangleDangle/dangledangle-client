@@ -5,23 +5,33 @@ import uploadImage from '@/utils/uploadImage';
 export default function useImageUploader() {
   const [src, setSrc] = useState<string>();
   const [isUploading, startUploading, finishUploading] = useBooleanState();
+  const [uploadError, setUploadError] = useState(false);
 
   const onChangeImage = useCallback(
-    (file?: File, onUploaded?: (url?: string) => Promise<void>) => {
+    async (file?: File, onUploaded?: (url?: string) => Promise<void>) => {
       if (!file) return;
 
       startUploading();
-      return uploadImage(file)
-        .then(async url => {
-          setSrc(url);
+      try {
+        const url = await uploadImage(file);
+        setSrc(url);
+        if (url) {
           onUploaded && (await onUploaded(url));
+          finishUploading();
+          setUploadError(false);
           return url;
-        })
-        .catch(() => setSrc(undefined))
-        .finally(finishUploading);
+        } else {
+          throw Error();
+        }
+      } catch {
+        setUploadError(true);
+        setSrc(undefined);
+        finishUploading();
+        return undefined;
+      }
     },
     [finishUploading, startUploading]
   );
 
-  return { src, setSrc, isUploading, onChangeImage };
+  return { src, setSrc, isUploading, uploadError, onChangeImage };
 }

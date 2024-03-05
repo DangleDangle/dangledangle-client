@@ -32,9 +32,8 @@ import { VolunteerEvent } from '@/api/shelter/event/volunteer-event';
 import Avartar from '@/components/common/Avartar/Avartar';
 import ConfirmContent from '../ConfirmContent/ConfirmContent';
 import * as styles from './ShelterEvent.css';
+import { URL_FAQ, URL_ONETOONE } from '@/constants/landingURL';
 
-const QNA =
-  'https://www.notion.so/yapp-workspace/FAQ-f492ba54a5d647129ca9697fbd307b20?pvs=4';
 const NOTICE = '*세부 주소는 봉사 참가자에게 별도로 안내드립니다.';
 const DangleMap = dynamic(() => import('@/components/common/Map/DangleMap'), {
   loading: () => <LoadingIndicator color="primary" />
@@ -300,9 +299,15 @@ export default function ShelterEvent({
           />
 
           <p className={styles.underline}>
-            <Link href={QNA}>자주 묻고 답하는 질문</Link>
+            <a href={URL_FAQ} target="_blank">
+              자주 묻고 답하는 질문
+            </a>
           </p>
-          <p className={styles.underline}>1:1 문의하기</p>
+          <p className={styles.underline}>
+            <a href={URL_ONETOONE} target="_blank">
+              1:1 문의하기
+            </a>
+          </p>
         </div>
       </div>
 

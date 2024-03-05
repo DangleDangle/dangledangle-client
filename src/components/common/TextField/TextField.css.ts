@@ -75,7 +75,7 @@ export const textAreaContainer = recipe({
     boxSizing: 'border-box',
     padding: '10px',
     marginBottom: '4px',
-    overflowX: 'hidden' /* 가로 스크롤은 숨김 */,
+    overflow: 'hidden',
     whiteSpace: 'pre-wrap' /* 줄 바꿈과 공백 유지 */,
     wordWrap: 'break-word'
   },

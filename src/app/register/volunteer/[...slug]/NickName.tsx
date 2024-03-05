@@ -4,8 +4,14 @@ import EmphasizedTitle, {
 import * as style from './style.css';
 import TextFieldWithForm from '@/components/common/TextField/TextFieldWithForm';
 import { CurrentComponentProps } from './CurrentComponentTypes';
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export default function NickName({ formName }: CurrentComponentProps) {
+  const { setFocus } = useFormContext();
+  useEffect(() => {
+    formName && setFocus(formName);
+  }, []);
   return (
     <>
       <div className={style.titleSection}>

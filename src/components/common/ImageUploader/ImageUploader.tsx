@@ -86,7 +86,7 @@ export const ImageUploader = React.forwardRef<
               <Camera />
             </div>
             {(loading || error) && (
-              <div className={styles.loadingMask}>
+              <div className={styles.loadingMask({ shape })}>
                 {(loading && <LoadingIndicator color="primary" />) ||
                   (error && <Body1 color="error">실패⚠️</Body1>)}
               </div>

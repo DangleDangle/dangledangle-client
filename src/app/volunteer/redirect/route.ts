@@ -48,15 +48,13 @@ export async function GET(req: NextRequest) {
     const redirectPath = cookieStore.get(COOKIE_REDIRECT_URL)?.value || '/';
     const redirectTo = `${originUrl}${decodeURIComponent(redirectPath)}`;
     const res = NextResponse.redirect(redirectTo, {
-      status: 308,
-      headers: {
-        locagion: redirectTo
-      }
+      status: 308
     });
     const cookieConfig = getCookieConfig(req);
 
     res.cookies.set(COOKIE_ACCESS_TOKEN_KEY, accessToken, cookieConfig);
     res.cookies.set(COOKIE_REFRESH_TOKEN_KEY, refreshToken, cookieConfig);
+    res.cookies.delete(COOKIE_REDIRECT_URL);
 
     return res;
   } catch (e) {

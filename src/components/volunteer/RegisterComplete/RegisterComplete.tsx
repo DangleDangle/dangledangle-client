@@ -1,20 +1,24 @@
 'use client';
 import { H2, H3 } from '@/components/common/Typography';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import Button from '@/components/common/Button/Button';
 import * as styles from './RegisterComplete.css';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import useHeader from '@/hooks/useHeader';
 import Cookies from 'js-cookie';
-import { COOKIE_REGISTER_EMAIL_KEY } from '@/constants/cookieKeys';
+import {
+  COOKIE_REDIRECT_URL,
+  COOKIE_REGISTER_EMAIL_KEY
+} from '@/constants/cookieKeys';
 
 export default function RegisterComplete() {
-  const router = useRouter();
   useHeader({ isHeader: 'hidden' });
-  const handleClick = useCallback(async () => {
+  useEffect(() => {
     Cookies.remove(COOKIE_REGISTER_EMAIL_KEY);
-    router.replace('/');
+  }, []);
+  const handleClick = useCallback(async () => {
+    Cookies.set(COOKIE_REDIRECT_URL, '/');
+    location.href = process.env.NEXT_PUBLIC_KAKAO_LOGIN_URL!;
   }, []);
 
   return (
@@ -32,7 +36,7 @@ export default function RegisterComplete() {
           <div className={styles.titleGroup}>
             <H2>가입완료!</H2>
             <div>
-              <H3>관심 있는 보소호를 발견하고</H3>
+              <H3>관심 있는 보호소를 발견하고</H3>
               <H3> 같이 세상을 바꿔볼까요?</H3>
             </div>
           </div>

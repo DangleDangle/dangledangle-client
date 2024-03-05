@@ -19,9 +19,22 @@ export const retryRequestOnUnauthorized: AfterResponseHookWithProcess =
         if (data.success === true) {
           return ky(request, options);
         } else {
-          window.location.href = '/login';
+          window.location.href = '/logout?force=true';
           return;
         }
+      }
+    }
+  };
+
+export const redirectTokenError: AfterResponseHookWithProcess =
+  process => async (request, options, response) => {
+    const data = await response.json();
+    if (data.exceptionCode === ExceptionCode.TOKEN_VALID_ERROR) {
+      console.log('exceptionCode === api-006', 123123);
+      if (runtimeCheck() === 'browser') {
+        console.log('browser redirect?');
+        window.location.href = '/logout?force=true';
+        return;
       }
     }
   };
@@ -36,6 +49,7 @@ export const throwServerErrorMessage: AfterResponseHook = async (
 ) => {
   if (response.status >= 400) {
     const responseData = (await response.json()) as ApiErrorResponse;
+    console.log('throwError, ', responseData);
 
     throw responseData;
   }

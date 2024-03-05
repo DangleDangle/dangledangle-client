@@ -1,8 +1,10 @@
 import { loginShelter } from '@/api/shelter/auth/login';
 import {
   COOKIE_ACCESS_TOKEN_KEY,
+  COOKIE_REDIRECT_URL,
   COOKIE_REFRESH_TOKEN_KEY
 } from '@/constants/cookieKeys';
+import { URL_PASSWORD_CHANGE } from '@/constants/landingURL';
 import { decrypt } from '@/utils/passwordCrypto';
 import { getCookieConfig } from '@/utils/token/cookieConfig';
 import { NextRequest, NextResponse } from 'next/server';
@@ -22,10 +24,12 @@ export async function POST(req: NextRequest) {
     if (!email || !password) {
       throw new Error('이메일과 비밀번호를 입력해주세요.');
     }
-    const { accessToken, refreshToken } = await loginShelter({
-      email,
-      password
-    });
+    const { accessToken, refreshToken, needToChangePassword } =
+      await loginShelter({
+        email,
+        password
+      });
+
     const res = NextResponse.json({
       redirectURI: redirectTo,
       success: true,
@@ -34,15 +38,17 @@ export async function POST(req: NextRequest) {
     });
 
     const cookieConfig = getCookieConfig(req);
-
+    if (needToChangePassword) {
+      res.cookies.set(COOKIE_REDIRECT_URL, URL_PASSWORD_CHANGE);
+    }
     res.cookies.set(COOKIE_ACCESS_TOKEN_KEY, accessToken, cookieConfig);
     res.cookies.set(COOKIE_REFRESH_TOKEN_KEY, refreshToken, cookieConfig);
     return res;
   } catch (e) {
     const err = e as Error;
-    return NextResponse.json({
-      error: err.message,
-      status: 400
+    return new Response(null, {
+      status: 400,
+      statusText: err.message
     });
   }
 }

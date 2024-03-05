@@ -22,7 +22,7 @@ export default function useUpdateEssentialInfo(
     {
       onSuccess: (data, variables, context) => {
         options?.onSuccess && options.onSuccess(data, variables, context);
-        return queryClient.invalidateQueries(shelterKey.info());
+        queryClient.invalidateQueries(shelterKey.info());
       },
       ...options
     }

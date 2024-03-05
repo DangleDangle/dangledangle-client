@@ -22,5 +22,6 @@ export const registerTextWrapper = style({
   display: 'flex',
   columnGap: '10px',
   justifyContent: 'center',
+  alignItems: 'center',
   marginTop: '34px'
 });

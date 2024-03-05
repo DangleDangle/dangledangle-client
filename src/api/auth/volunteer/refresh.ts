@@ -16,7 +16,7 @@ export const fetchRefresh = async (data: LoginResponse) => {
 };
 
 export const getRefresh = async () => {
-  const response = await fe.get(`auth/token/refresh`).then(res =>
+  const response = await fe.get(`auth/token`).then(res =>
     res.json<{
       success: boolean;
     }>()
